@@ -4,6 +4,7 @@ import json
 import os
 import base64
 import time
+from streamlit_pdf_viewer import pdf_viewer
 
 st.set_page_config(layout="wide")
 
@@ -172,27 +173,15 @@ if uploaded_file or st.session_state.get("demo_mode"):
         st.header("Preview")
 
         with open(output_pdf, "rb") as pdf_file:
-            base64_pdf = base64.b64encode(
-                pdf_file.read()
-            ).decode('utf-8')
+            pdf_bytes = pdf_file.read()
 
-        pdf_display = f"""
-        <iframe
-            src="data:application/pdf;base64,{base64_pdf}"
-            width="100%"
-            height="900"
-            type="application/pdf">
-        </iframe>
-        """
-
-        st.markdown(pdf_display, unsafe_allow_html=True)
+        # Proper PDF Viewer
+        pdf_viewer(pdf_bytes)
 
         # Download Button
-
-        with open(output_pdf, "rb") as pdf_file:
-            st.download_button(
-                "Download PDF",
-                pdf_file,
-                file_name="filled_form35.pdf",
-                mime="application/pdf"
-            )
+        st.download_button(
+            "Download PDF",
+            pdf_bytes,
+            file_name="filled_form35.pdf",
+            mime="application/pdf"
+        )
