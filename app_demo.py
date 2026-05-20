@@ -162,7 +162,6 @@ if uploaded_file or st.session_state.get("demo_mode"):
     output_pdf = "temp/live_preview.pdf"
 
     form_doc.save(output_pdf)
-
     # ========================================
     # RIGHT SIDE → LIVE PDF
     # ========================================
@@ -175,11 +174,25 @@ if uploaded_file or st.session_state.get("demo_mode"):
         with open(output_pdf, "rb") as pdf_file:
             pdf_bytes = pdf_file.read()
 
-        # Native PDF preview (works better on Brave)
-        try:
-            st.pdf(pdf_bytes)
-        except:
-            st.info("PDF preview not supported in this browser.")
+        # Embed PDF using browser-safe object tag
+        base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
+
+        pdf_display = f"""
+        <object
+            data="data:application/pdf;base64,{base64_pdf}"
+            type="application/pdf"
+            width="100%"
+            height="900">
+
+            <p>
+                Your browser cannot display PDFs.
+                Please download the PDF instead.
+            </p>
+
+        </object>
+        """
+
+        st.markdown(pdf_display, unsafe_allow_html=True)
 
         # Download Button
         st.download_button(
